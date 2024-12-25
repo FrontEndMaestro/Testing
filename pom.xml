@@ -1,0 +1,174 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="
+           http://maven.apache.org/POM/4.0.0 
+           http://maven.apache.org/xsd/maven-4.0.0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+
+    <!-- 1. Add Spring Boot Starter Parent -->
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>2.7.5</version> <!-- Use the latest stable version -->
+        <relativePath/> <!-- Lookup parent from repository -->
+    </parent>
+
+    <groupId>org.example</groupId>
+    <artifactId>6G6Z0035_2CWK70_2425</artifactId>
+    <version>1.0-SNAPSHOT</version>
+    <packaging>jar</packaging> <!-- Specify packaging type -->
+
+    <properties>
+        <!-- 2. Set Java Version to 17 -->
+        <java.version>17</java.version>
+        <maven.compiler.source>${java.version}</maven.compiler.source>
+        <maven.compiler.target>${java.version}</maven.compiler.target>
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <jacoco.version>0.8.10</jacoco.version>
+        <!-- Define JMeter Maven Plugin version if needed -->
+        <jmeter.maven.plugin.version>3.8.0</jmeter.maven.plugin.version>
+            <sonar.projectKey>your-sonarcloud-project-key</sonar.projectKey>
+    <sonar.organization>your-sonarcloud-organization</sonar.organization>
+    <sonar.host.url>https://sonarcloud.io</sonar.host.url>
+    </properties>
+
+    <dependencies>
+        <!-- 3. Add Spring Boot Starter Web -->
+        <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-web</artifactId>
+        </dependency>
+
+        <!-- 4. JUnit Jupiter for Testing -->
+        <dependency>
+            <groupId>org.junit.jupiter</groupId>
+            <artifactId>junit-jupiter</artifactId>
+            <version>5.8.1</version>
+            <scope>test</scope>
+        </dependency>
+
+        <!-- 5. Add Other Dependencies as Needed -->
+        <!-- Example: Lombok for reducing boilerplate code -->
+        <!--
+        <dependency>
+            <groupId>org.projectlombok</groupId>
+            <artifactId>lombok</artifactId>
+            <version>1.18.24</version>
+            <scope>provided</scope>
+        </dependency>
+        -->
+    </dependencies>
+
+    <build>
+        <plugins>
+            <!-- 6. JaCoCo Maven Plugin for Code Coverage -->
+            <plugin>
+                <groupId>org.jacoco</groupId>
+                <artifactId>jacoco-maven-plugin</artifactId>
+                <version>${jacoco.version}</version>
+                <executions>
+                    <!-- Prepare JaCoCo Agent before tests -->
+                    <execution>
+                        <id>prepare-agent</id>
+                        <goals>
+                            <goal>prepare-agent</goal>
+                        </goals>
+                        <configuration>
+                            <propertyName>surefireArgLine</propertyName>
+                        </configuration>
+                    </execution>
+                    <!-- Generate JaCoCo Report after tests -->
+                    <execution>
+                        <id>report</id>
+                        <phase>test</phase>
+                        <goals>
+                            <goal>report</goal>
+                        </goals>
+                        <configuration>
+                            <outputDirectory>${project.reporting.outputDirectory}/jacoco</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 7. Maven Compiler Plugin to Set Java Version -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.10.1</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                </configuration>
+            </plugin>
+
+            <!-- 8. Maven Surefire Plugin for Running Tests -->
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <version>3.0.0-M7</version>
+                <configuration>
+                    <argLine>${surefireArgLine}</argLine>
+                    <includes>
+                        <include>/*Test.java</include>
+                    </includes>
+                </configuration>
+            </plugin>
+
+            <!-- 9. JMeter Maven Plugin for Load Testing (Optional) -->
+            <plugin>
+                <groupId>com.lazerycode.jmeter</groupId>
+                <artifactId>jmeter-maven-plugin</artifactId>
+                <version>${jmeter.maven.plugin.version}</version>
+                <executions>
+                    <execution>
+                        <id>jmeter-tests</id>
+                        <goals>
+                            <goal>jmeter</goal>
+                        </goals>
+                        <phase>verify</phase> <!-- Bind to the verify phase -->
+                        <configuration>
+                            <!-- Path to your JMeter test plans -->
+                            <testFilesIncluded>
+                                <jMeterTestFile>/*.jmx</jMeterTestFile>
+                            </testFilesIncluded>
+                            <!-- Directory where JMeter test plans are located -->
+                            <testFilesDirectory>src/test/jmeter</testFilesDirectory>
+                            <!-- Directory to store JMeter results -->
+                            <resultsDirectory>target/jmeter/results</resultsDirectory>
+                            <!-- Directory to store JMeter reports -->
+                            <reportDirectory>target/jmeter/reports</reportDirectory>
+                            <!-- Optional: Additional JMeter properties -->
+                            <propertiesUser>
+                                <jmeter.save.saveservice.output_format>xml</jmeter.save.saveservice.output_format>
+                            </propertiesUser>
+                            <!-- Optional: Set JVM arguments for JMeter -->
+                            <jvmArgs>-Xms512m -Xmx2048m</jvmArgs>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+
+            <!-- 10. Spring Boot Maven Plugin for Packaging and Running -->
+            <plugin>
+                <groupId>org.springframework.boot</groupId>
+                <artifactId>spring-boot-maven-plugin</artifactId>
+                <version>2.7.5</version>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>repackage</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
+
+           <plugin>
+        <groupId>org.sonarsource</groupId>
+        <artifactId>sonar-maven-plugin</artifactId>
+        <version>3.9.0.2155</version> <!-- Make sure to use the latest version -->
+    </plugin>
+    </plugins>
+
+    </build>
+</project>
